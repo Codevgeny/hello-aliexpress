@@ -33,17 +33,89 @@ goodsBtn.forEach(function(btn, i) {      //перебираем все элем�
 
         trigger.remove(); //удаляем кнопку
 
+        showConfirm();  //фенкция всплывающей корзины
+        calcGoods(1);
+
         removeBtn.classList.add('goods__item-remove');  //добавляем класс
         removeBtn.innerHTML = '&times'; // &times добавляет крестик
-        item.appendChild(removeBtn); 
+        item.appendChild(removeBtn); //Помещаем removeBtn в item
 
         cartWrapper.appendChild(item); //Помещаем item в cartWrapper
-        if (empty) {     //если есть сообщение в empty
-            empty.remove(); // удаляем empty
-        }
+        
+        //if (empty) {     //если есть сообщение в empty
+            // empty.remove(); // удаляем empty
+            //empty.style.display = 'none';
+        //} 
+
+        calcTotal();
+        removeFromCart(); //вызываем удаление карточки после вызова крестика
     });
 });
 
+function sliceTitle() {
+    titles.forEach(function(item) {
+        if (item.textContent.len < 70) {    // Если кол-во символов текста < 70 оставляем как есть
+            return;
+        } else {
+            const str = item.textContent.slice(0, 71) + '...'; 
+            // const str = `${item.textContent.slice(0, 71)} ...`; 
+            
+            item.textContent = str;
+        }
+    });
+}
+sliceTitle ();
+
+//Функция анимации
+function showConfirm() {
+    confirm.style.display = 'block';
+    let counter = 100;  // let потому что переменная изменяется
+    // [1223434]
+    const id = setInterval(frame,10); // вызваем функцию frame кадлые 10 мс c помощью переменной id 
+    function frame() {
+        if (counter == 10) {
+            clearInterval(id); //останавливает функцию frame по id
+            confirm.style.display = 'none';
+        } else {
+            counter--;  // Оператор декремент (--) уменьшает кол-во счетчика counter на 1
+            // Прописываем блоку confirm стиль transform, который сдвигает блок по осиY (translateY(-px)) вниз, если вверх то +
+            // Переменная counter вставляется между - и px с помощью знака $ и фигурных скобок {} и определяет кол-во пикселей
+            confirm.style.transform = `translateY(-${counter}px)`;
+            confirm.style.opacity ='.' + counter; //назначием блоку прозрачность opacity ,значение которого тоже определяется счетчиком
+            // setInterval(sliceTitle, 100) позволяет запускать скрипт каждые 100 мс
+            // setTimeout(sliceTitle, 100) позволяет запускать скрипт одноразово раз в 100 мс
+        }
+        
+    }
+
+}
+
+function calcGoods(i) {
+    const items = cartWrapper.querySelectorAll('.goods__item'); // Получаем кол-во товаров
+    badge.textContent = items.length + i; // Записываем кол-во товаров в бэйдж + 1
+
+}
+
+function calcTotal() {
+    const prices = document.querySelectorAll('.cart__wrapper > .goods__item > .goods__price > span');
+    let total = 0;
+    prices.forEach(function(item) {
+        total += +item.textContent; // += заменяет total = total + ...  "+" перед item.textContent меняет строку на число
+    });
+    totalCost.textContent = total;
+}
+
+function removeFromCart() {
+    const removeBtn = cartWrapper.querySelectorAll('.goods__item-remove');
+    removeBtn.forEach(function(btn) {
+        btn.addEventListener('click',() => {
+            btn.parentElement.remove();       //удаление родительского элемента крестика
+            calcGoods(0);
+            calcTotal();
+        });
+    });
+}
+console.log(calcGoods())
 });
 
 
