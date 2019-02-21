@@ -9,7 +9,8 @@ const cartWrapper = document.querySelector('.cart__wrapper'),      //Получ�
     confirm = document.querySelector('.confirm'),
     badge = document.querySelector('.nav__badge'),
     totalCost = document.querySelector('.cart__total > span'),
-    titles = document.querySelectorAll('.goods__title');
+    titles = document.querySelectorAll('.goods__title'),
+    empty = cartWrapper.querySelector('.empty'); // Получаем сообщение о том что корзина пуста
 
 function openCart() {
     cart.style.display = 'block';
@@ -28,8 +29,7 @@ goodsBtn.forEach(function(btn, i) {      //перебираем все элем�
     btn.addEventListener('click', () => {   //навешиваем клик на все кнопки
         let item = products[i].cloneNode(true),  // Обьявляем глобальную переменую item и клонируем по порядку карточки
             trigger = item.querySelector('button'),  // Получаем кнопку из item в trigger
-            removeBtn = document.createElement('div'), // Создаем блок и записываем в переменную removeBtn
-            empty = cartWrapper.querySelector('.empty'); // Получаем сообщение о том что корзина пуста
+            removeBtn = document.createElement('div'); // Создаем блок и записываем в переменную removeBtn
 
         trigger.remove(); //удаляем кнопку
 
@@ -42,10 +42,10 @@ goodsBtn.forEach(function(btn, i) {      //перебираем все элем�
 
         cartWrapper.appendChild(item); //Помещаем item в cartWrapper
         
-        //if (empty) {     //если есть сообщение в empty
+        if (empty) {     //если есть сообщение в empty
             // empty.remove(); // удаляем empty
-            //empty.style.display = 'none';
-        //} 
+            empty.style.display = 'none';
+        } 
 
         calcTotal();
         removeFromCart(); //вызываем удаление карточки после вызова крестика
@@ -93,6 +93,9 @@ function showConfirm() {
 function calcGoods(i) {
     const items = cartWrapper.querySelectorAll('.goods__item'); // Получаем кол-во товаров
     badge.textContent = items.length + i; // Записываем кол-во товаров в бэйдж + 1
+    if (items.leght === 0) {
+        empty.style.display = 'block';
+    }
 
 }
 
@@ -103,6 +106,8 @@ function calcTotal() {
         total += +item.textContent; // += заменяет total = total + ...  "+" перед item.textContent меняет строку на число
     });
     totalCost.textContent = total;
+
+    return total; //возвращаем значение total в функции
 }
 
 function removeFromCart() {
@@ -112,10 +117,11 @@ function removeFromCart() {
             btn.parentElement.remove();       //удаление родительского элемента крестика
             calcGoods(0);
             calcTotal();
+
+            if (calcTotal() === 0) empty.style.display = 'block';
         });
     });
 }
-console.log(calcGoods())
 });
 
 
